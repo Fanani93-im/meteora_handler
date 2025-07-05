@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          submodules: true  # penting kalau kamu pakai meteora-dlmm
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -19,10 +21,21 @@ jobs:
           profile: minimal
           override: true
 
-      - name: Install Anchor
+      - name: Install Anchor CLI
         run: |
           curl -sSf https://raw.githubusercontent.com/coral-xyz/anchor/master/scripts/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
-      - name: Build SC
-        run: |
-          anchor build
+      - name: Check Anchor Version
+        run: anchor --version
+
+      - name: Build Smart Contract
+        run: anchor build
+
+      - name: Upload BPF and IDL
+        uses: actions/upload-artifact@v3
+        with:
+          name: meteora_handler_build
+          path: |
+            target/deploy/meteora_handler.so
+            target/idl/meteora_handler.json
