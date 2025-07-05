@@ -1,0 +1,28 @@
+name: Build Smart Contract
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Install Anchor
+        run: |
+          curl -sSf https://raw.githubusercontent.com/coral-xyz/anchor/master/scripts/install.sh | sh
+
+      - name: Build SC
+        run: |
+          anchor build
