@@ -39,3 +39,13 @@ jobs:
           path: |
             target/deploy/meteora_handler.so
             target/idl/meteora_handler.json
+
+      - name: Decode Devnet Keypair
+        run: |
+          echo "${{ secrets.DEVNET_DEPLOYER_KEYPAIR }}" | base64 -d > deployer.json
+
+      - name: Deploy to Devnet
+        run: |
+          solana config set --url https://api.devnet.solana.com
+          solana-keygen recover -o ~/.config/solana/id.json file://deployer.json
+          anchor deploy
